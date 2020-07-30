@@ -62,7 +62,9 @@ def sedMail(mail_url,text,res):
 
 
 '''
-@description: 用于签到的主体操作
+@description:   用于签到的主体操作
+                登录请求(进入信息页面)->修改请求(进入表单填写页面)
+                ->提交请求()
 @param {
     wx_openid   :   微信openid,用于登录请求
     url         :   主地址
@@ -77,7 +79,7 @@ def morning(wx_openid, url,email):
     soup = BeautifulSoup(login_res.text, "html5lib")  # 启动解析器
     csrf_token = soup.find(attrs={'name': 'csrf-token'})  # 获取token
     csrf_token_str = csrf_token.get('content')
-    
+    #进入信息页面的提交
     exit_post_data = {
         '_method': 'post',
         'authenticity_token': csrf_token_str
