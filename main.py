@@ -32,8 +32,8 @@ from bs4 import BeautifulSoup
 '''
 
 def sedMail(mail_url,text,res):
-    from_addr ='xxxxx@xxx.com'
-    password = 'xxxxx'
+    from_addr ='xxxxx@xxx.com'#邮箱
+    password = 'xxxxx'#密码
     
     # 收信方邮箱
     to_addr = mail_url
@@ -172,7 +172,7 @@ def morning(wx_openid, url,email):
     sedMail(email,hed+input_res.text,hed)#发送邮件通知提交结果
     session.close()#关闭会话
 if __name__ == "__main__":
-
+    admin_email="xxx@xx.com"#管理员邮箱
     url = "https://msj.jinshuju.net"#主地址
     mydb = mysql.connector.connect(
         host="127.0.0.1",       # 数据库主机地址
@@ -195,11 +195,11 @@ if __name__ == "__main__":
                 localtime = time.asctime( time.localtime(time.time()) )
                 print(localtime+"|"+email+"签到出错")
                 sedMail(email,'签到发生错误',"出错")
-                sedMail('xxxxxxxx@qq.com',email+'签到出错',"出错")     
+                sedMail(admin_email,email+'签到出错',"出错")     
             except:
                 try:
                     #发送不了邮件
-                    sedMail('xxxxx@qq.com',email+'邮件发送出错',"出错")
+                    sedMail(admin_email,email+'邮件发送出错',"出错")
                 except:
                     #如果一直错到现在，那么可能是邮件发送达到了上限
                     print("邮件发送异常似乎达到上限")
