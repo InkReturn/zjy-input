@@ -201,7 +201,7 @@ if __name__ == "__main__":
                     #发送不了邮件
                     sedMail('xxxxx@qq.com',email+'邮件发送出错',"出错")
                 except:
-                    #如果一直错到现在，那么可能是邮件达到了上限
+                    #如果一直错到现在，那么可能是邮件发送达到了上限
                     print("邮件发送异常似乎达到上限")
         else:
             localtime = time.asctime( time.localtime(time.time()) )
