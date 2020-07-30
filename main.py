@@ -141,24 +141,24 @@ def morning(wx_openid, url,email):
         'entry[field_130]': 0,
         'entry[field_96][]': 0
     }
-    #
+    #开始进行获取表单按钮的值，循环json键查找网页
     for key in input_post_data:
-        if input_post_data[key] == "":
-            if key in dict:
-                if soup.find_all(attrs={'name': key})[dict[key]].get("value") is not None:
+        if input_post_data[key] == "":#如果没有预设即开始获取
+            if key in dict:#如果有自定义规则，则按照自定义规则获取
+                if soup.find_all(attrs={'name': key})[dict[key]].get("value") is not None:#表单键值有两种属性
                     input_post_data[key] = soup.find_all(attrs={'name': key})[
                         dict[key]].get("value")
                 elif soup.find_all(attrs={'name': key})[dict[key]].get("data-value") is not None:
                     input_post_data[key] = soup.find_all(attrs={'name': key})[
                         dict[key]].get("data-value")
-            elif soup.find(attrs={'name': key, 'checked': 'checked'}) is not None:
+            elif soup.find(attrs={'name': key, 'checked': 'checked'}) is not None:#如果是选择框的形式
                 if (soup.find(attrs={'name': key, 'checked': 'checked'})).get("data-value") is not None:
                     input_post_data[key] = soup.find(
                         attrs={'name': key, 'checked': 'checked'}).get("data-value")
                 elif soup.find(attrs={'name': key, 'checked': 'checked'}).get("value") is not None:
                     input_post_data[key] = soup.find(
                         attrs={'name': key, 'checked': 'checked'}).get("value")
-            else:
+            else:#如果是输入框的形式，一般都是以前已经填写好的
                 if soup.find(attrs={'name': key}).get("value") is not None:
                     input_post_data[key] = soup.find(
                         attrs={'name': key}).get("value")
@@ -166,13 +166,14 @@ def morning(wx_openid, url,email):
                     input_post_data[key] = soup.find(attrs={'name': key}).get("data-value")
 
 
-    input_res = session.post(url=(url+input_url), data=input_post_data)
-    soup = BeautifulSoup(input_res.text, "html5lib")
-    hed  = soup.find(attrs={'data-field':'field_113','class':"radiobutton"}).text
-    sedMail(email,hed+input_res.text,hed)
-    session.close()
+    input_res = session.post(url=(url+input_url), data=input_post_data)#post提交
+    soup = BeautifulSoup(input_res.text, "html5lib")#获取doc树
+    hed  = soup.find(attrs={'data-field':'field_113','class':"radiobutton"}).text#获取到提交后才会显示的参数用于确认是否填写
+    sedMail(email,hed+input_res.text,hed)#发送邮件通知提交结果
+    session.close()#关闭会话
 if __name__ == "__main__":
-    url = "https://msj.jinshuju.net"
+
+    url = "https://msj.jinshuju.net"#主地址
     mydb = mysql.connector.connect(
         host="127.0.0.1",       # 数据库主机地址
         user="xxxxxxx",    # 数据库用户名
@@ -190,14 +191,17 @@ if __name__ == "__main__":
             morning(wx_openid, url,email)
         except:
             try:
+                #出错问题一般为表单被修改了，所以按照json获取不了
                 localtime = time.asctime( time.localtime(time.time()) )
                 print(localtime+"|"+email+"签到出错")
                 sedMail(email,'签到发生错误',"出错")
                 sedMail('xxxxxxxx@qq.com',email+'签到出错',"出错")     
             except:
                 try:
+                    #发送不了邮件
                     sedMail('xxxxx@qq.com',email+'邮件发送出错',"出错")
                 except:
+                    #如果一直错到现在，那么可能是邮件达到了上限
                     print("邮件发送异常似乎达到上限")
         else:
             localtime = time.asctime( time.localtime(time.time()) )
