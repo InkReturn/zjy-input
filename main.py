@@ -77,23 +77,25 @@ def morning(wx_openid, url,email):
     session = requests.session()  # 会话开始
     login_res = session.get(url=(url+login_url+wx_openid))  # 访问登录
     soup = BeautifulSoup(login_res.text, "html5lib")  # 启动解析器
-    csrf_token = soup.find(attrs={'name': 'csrf-token'})  # 获取token
+    # 获取token
+    csrf_token = soup.find(attrs={'name': 'csrf-token'}) 
     csrf_token_str = csrf_token.get('content')
-    #进入信息页面的提交
+    #进入信息页面的提交所需的数据
     exit_post_data = {
         '_method': 'post',
         'authenticity_token': csrf_token_str
     }
+    #动态获取下一个页面的地址
     exit_url = soup.find(attrs={'data-method':'post'}).get('href')
     exit_res = session.post(url=url+exit_url,
                             data=exit_post_data)  # 访问修改页面  # 访问修改页面
     soup = BeautifulSoup(exit_res.text, "html5lib")
-    # input_url = soup.find(name='form').get("action")
-    csrf_token = soup.find(attrs={'name': 'csrf-token'})  # 获取token
+    # 获取token
+    csrf_token = soup.find(attrs={'name': 'csrf-token'}) 
     csrf_token_str = csrf_token.get('content')
+    # 获取t
     t = soup.find(attrs={'name': 't', 'id': 't'})
     t_str = t.get('value')
-
     input_url = soup.find(name='form').get('action')
     #设置提交表单
     input_post_data = {
@@ -131,6 +133,7 @@ def morning(wx_openid, url,email):
         'entry[field_96_other]': '' ,
         'commit': '提交'
     }
+    #设置部分自定义选项规则
     dict = {
         'entry[field_113]': 1,
         'entry[field_114][]': 0,
@@ -138,6 +141,7 @@ def morning(wx_openid, url,email):
         'entry[field_130]': 0,
         'entry[field_96][]': 0
     }
+    #
     for key in input_post_data:
         if input_post_data[key] == "":
             if key in dict:
